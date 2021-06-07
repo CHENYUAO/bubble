@@ -70,8 +70,7 @@ func startEngine() {
 		v1Group.POST("/todo", postTitle)
 		//查看所有待办事项
 		v1Group.GET("/todo", getTitle)
-		//查看某一个待办事项
-		//完成（修改某个待办事项）
+		//修改某个待办事项
 		v1Group.PUT("/todo/:id", putTitle)
 		//删除
 		v1Group.DELETE("/todo/:id", deleteTitle)
@@ -167,6 +166,7 @@ func deleteTitle(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+/***********************************main函数**************************/
 func main() {
 	// 读取配置信息
 	dsn, err := readConf("ini/conf.ini")
@@ -174,8 +174,7 @@ func main() {
 		log.Fatal("read config files failed,err:", err)
 	}
 	//连接数据库
-	err = initDB(dsn)
-	if err != nil {
+	if err = initDB(dsn); err != nil {
 		log.Panic("connect to mysql failed,err:", err)
 	}
 	defer db.Close()
