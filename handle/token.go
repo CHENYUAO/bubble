@@ -14,7 +14,7 @@ type MyClaims struct {
 
 const TokenExpireDuration = time.Hour * 24
 
-var Mysecret = []byte("fkuyjs")
+var Mysecret = []byte("dunimadeyan")
 
 func GenerateToken(username string) (string, error) {
 	//设置token信息

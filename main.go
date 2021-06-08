@@ -1,36 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"bubble/handle"
 	"bubble/mysql"
-
-	"github.com/go-ini/ini"
-
 )
-
-// 从配置文件中读取数据库配置信息，返回dsn
-func readConf(path string) (string, error) {
-	//从配置文件中读取数据库配置信息
-	cfg, err := ini.Load(path)
-	if err != nil {
-		return "", err
-	}
-	user := cfg.Section("mysql").Key("user").String()
-	passwd := cfg.Section("mysql").Key("passwd").String()
-	host := cfg.Section("mysql").Key("host").String()
-	port := cfg.Section("mysql").Key("port").String()
-	database := cfg.Section("mysql").Key("database").String()
-	dsn := fmt.Sprint(user, ":", passwd, "@tcp", "(", host, ":", port, ")", "/", database)
-	log.Println("parse config files success")
-	return dsn, nil
-}
 
 func main() {
 	// 读取配置信息
-	dsn, err := readConf("ini/conf.ini")
+	dsn, err := mysql.ReadConf("./conf/bubble.ini")
 	if err != nil {
 		log.Fatal("read config files failed,err:", err)
 	}
