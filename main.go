@@ -8,7 +8,7 @@ import (
 	"bubble/mysql"
 
 	"github.com/go-ini/ini"
-	_ "github.com/go-sql-driver/mysql"
+
 )
 
 // 从配置文件中读取数据库配置信息，返回dsn
@@ -28,7 +28,6 @@ func readConf(path string) (string, error) {
 	return dsn, nil
 }
 
-/***********************************main函数**************************/
 func main() {
 	// 读取配置信息
 	dsn, err := readConf("ini/conf.ini")
