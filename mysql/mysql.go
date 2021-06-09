@@ -1,8 +1,10 @@
 package mysql
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -18,6 +20,11 @@ type MysqlConfig struct {
 	Host   string `ini:"host"`
 	Port   string `ini:"port"`
 	DB     string `ini:"database"`
+}
+
+type Users struct {
+	UserName string
+	Password string
 }
 
 // 从配置文件中读取数据库配置信息，返回dsn
@@ -43,4 +50,16 @@ func InitDB(dsn string) (err error) {
 	DB.SetMaxIdleConns(10)
 	log.Println("init database success")
 	return nil
+}
+
+func AuthUser(username, password string) error {
+	sqlStr := `select * from users where username = ?;`
+	var u1 Users
+	if err := DB.Get(&u1, sqlStr, username); err != nil {
+		return err
+	}
+	if strings.EqualFold(u1.Password, password) {
+		return nil
+	}
+	return errors.New("wrong password")
 }

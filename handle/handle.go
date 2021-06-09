@@ -25,10 +25,12 @@ func StartEngine() {
 	r.Static("/static", "static")
 	//加载模板文件夹
 	r.LoadHTMLGlob("template/*")
-	//注册路由
+	//注册路由，发送登录页面给用户
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
+		c.HTML(http.StatusOK, "login.html", nil)
 	})
+
+	r.POST("/login", Authority)
 	// v1路由组
 	//待办事项
 	v1Group := r.Group("v1")
@@ -43,6 +45,19 @@ func StartEngine() {
 		v1Group.DELETE("/todo/:id", DeleteTitle)
 	}
 	r.Run(":40000")
+}
+
+func Authority(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	//验证用户名和密码
+	err := mysql.AuthUser(username, password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "用户名或密码错误",
+		})
+	}
+	c.HTML(http.StatusOK, "index.html", nil)
 }
 
 func PostTitle(c *gin.Context) {
