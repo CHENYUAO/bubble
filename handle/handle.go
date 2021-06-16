@@ -30,7 +30,15 @@ func StartEngine() {
 		c.HTML(http.StatusOK, "login.html", nil)
 	})
 
-	r.POST("/login", Authority)
+	loginGroup := r.Group("login")
+	{
+		loginGroup.POST("/", Authority)
+		//这里是一个bug，点击进入到清单界面之后，网页url是xxx/login/#/，点击刷新按钮会GET /login 所以临时这样处理，后续想办法解决问题
+		loginGroup.GET("/", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "login.html", nil)
+		})
+	}
+	// r.POST("/login", Authority)
 	// v1路由组
 	//待办事项
 	v1Group := r.Group("v1")

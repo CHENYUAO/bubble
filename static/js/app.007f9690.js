@@ -136,7 +136,7 @@
                     }
                 }, [n("div", {
                     staticClass: "grid-content"
-                }, [n("el-divider", [n("h1", [e._v("bubble清单")])]), n("TodoList")], 1)])], 1)], 1), n("el-footer", [e._v("q1mi出品 Go学习交流QQ群：645090316")])], 1)
+                }, [n("el-divider", [n("h1", [e._v("bubble清单")])]), n("TodoList")], 1)])], 1)], 1), n("el-footer", [e._v("")])], 1)
             },
             d = [],
             f = function () {

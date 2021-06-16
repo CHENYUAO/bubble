@@ -23,7 +23,7 @@ body
 {
 	margin:0 0 30px;
 	padding: 0;
-	color: #fff;
+	color: #023b55;
 	text-align: center;
 }
 .box .inputBox
@@ -35,7 +35,7 @@ body
 	width:100%;
 	padding: 10px 0;
 	font-size: 16px;
-	color: #fff;
+	color: rgb(0, 0, 0);
 	letter-spacing: 1px;
 	margin-bottom: 30px;
 	border: none;
@@ -51,7 +51,7 @@ body
 	padding: 10px 0;
 	letter-spacing: 1px;
 	font-size: 16px;
-	color: #fff;
+	color: #03a9f4;
 	pointer-events: none;
 	transition: .5s;
 }
