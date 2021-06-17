@@ -75,3 +75,15 @@ body
 	cursor:pointer;
 	border-radius: 5px;
 }
+.box input[type="signup"]
+{
+	background: transparent;
+ 
+	border: none;
+	outline:none;
+	color: #fff;
+	background: #03a9f4;
+	padding: 30px 50px;
+	cursor:pointer;
+	border-radius: 5px;
+}

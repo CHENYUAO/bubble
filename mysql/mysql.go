@@ -63,3 +63,26 @@ func AuthUser(username, password string) error {
 	}
 	return errors.New("wrong password")
 }
+
+func InsertUser(username, password string) error {
+	tx, err := DB.Beginx()
+	if err != nil {
+		tx.Rollback()
+		log.Println("begin trans failed,err:", err)
+		return err
+	}
+	sqlQuery := `select username from users where username=?;`
+	var u1 Users
+	if err = tx.Get(&u1, sqlQuery, username); err == nil {
+		tx.Rollback()
+		return errors.New("user already exist")
+	}
+	sqlStr := `insert into users (username,password) values(?,?);`
+	if _, err = tx.Exec(sqlStr, username, password); err != nil {
+		tx.Rollback()
+		return errors.New("insert into db failed")
+	}
+	tx.Commit()
+	log.Printf("insert into db success,username:%v,password:%v\n", username, password)
+	return nil
+}

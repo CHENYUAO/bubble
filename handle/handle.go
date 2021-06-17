@@ -38,7 +38,13 @@ func StartEngine() {
 			c.HTML(http.StatusOK, "login.html", nil)
 		})
 	}
-	// r.POST("/login", Authority)
+	signupGroup := r.Group("/signup")
+	{
+		signupGroup.GET("/", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "signup.html", nil)
+		})
+		signupGroup.POST("/", SignUp)
+	}
 	// v1路由组
 	//待办事项
 	v1Group := r.Group("v1")
@@ -55,6 +61,27 @@ func StartEngine() {
 	r.Run(":40000")
 }
 
+func SignUp(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	again := c.PostForm("again")
+	if password != again {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "输入密码不一致",
+		})
+	}
+	if err := mysql.InsertUser(username, password); err != nil {
+		log.Printf("insert failed,err:%v\n", err)
+		c.JSON(http.StatusOK, gin.H{
+			"error": "更新数据库失败",
+		})
+		return
+	}
+	//跳转到登录页面
+	c.HTML(http.StatusOK, "login.html", nil)
+	return
+}
+
 func Authority(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -64,6 +91,7 @@ func Authority(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "用户名或密码错误",
 		})
+		return
 	}
 	c.HTML(http.StatusOK, "index.html", nil)
 }

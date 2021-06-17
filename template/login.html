@@ -4,11 +4,12 @@
         <meta charset='utf-8'>
         <title>Input From UI Design</title>
         <link rel="stylesheet" href="/static/css/style.css">
+        </style>
     </head>
     <body>
         <div class="box">
             <h2>Login</h2>
-            <form action="/login/" method="post">
+            <form action="/login" method="post">
                 <div class="inputBox">
                     <input type="text" name="username" required="">
                     <label>Username</label>
@@ -18,6 +19,10 @@
                     <label>password</label>
                 </div>
                 <input type="submit" name="submit_button" value="Submit">
+                    <p class="change_link" style="text-align: left">
+                        <span class="text">Do not have an account?</span>
+                        <a href="../signup" class="to_login"> Go to sign up</a>
+                    </p>
             </form>
         </div>   
     </body>
