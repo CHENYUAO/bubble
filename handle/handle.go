@@ -21,15 +21,11 @@ var r *gin.Engine
 
 func StartEngine() {
 	r = gin.Default()
-	//加载静态文件
 	r.Static("/static", "static")
-	//加载模板文件夹
 	r.LoadHTMLGlob("template/*")
-	//注册路由，发送登录页面给用户
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.html", nil)
 	})
-
 	loginGroup := r.Group("login")
 	{
 		loginGroup.POST("/", Authority)
@@ -45,7 +41,6 @@ func StartEngine() {
 		})
 		signupGroup.POST("/", SignUp)
 	}
-	// v1路由组
 	//待办事项
 	v1Group := r.Group("v1")
 	{
@@ -97,7 +92,6 @@ func Authority(c *gin.Context) {
 }
 
 func PostTitle(c *gin.Context) {
-	//事务
 	tx, err := mysql.DB.Beginx()
 	if err != nil {
 		tx.Rollback()
@@ -124,13 +118,11 @@ func PostTitle(c *gin.Context) {
 		})
 		return
 	}
-	//log.Println("insert into db success")
 	c.JSON(http.StatusOK, t)
 	tx.Commit()
 }
 
 func GetTitle(c *gin.Context) {
-	//事务
 	tx, err := mysql.DB.Beginx()
 	if err != nil {
 		tx.Rollback()
@@ -151,7 +143,6 @@ func GetTitle(c *gin.Context) {
 }
 
 func PutTitle(c *gin.Context) {
-	//事务
 	tx, err := mysql.DB.Beginx()
 	if err != nil {
 		tx.Rollback()
@@ -167,7 +158,6 @@ func PutTitle(c *gin.Context) {
 		})
 		return
 	}
-	// 先select，再取反再返回
 	var t Todo
 	sqlStrQuery := `select * from task where id=?`
 	if err := tx.Get(&t, sqlStrQuery, id); err != nil {
@@ -194,7 +184,6 @@ func PutTitle(c *gin.Context) {
 }
 
 func DeleteTitle(c *gin.Context) {
-	//事务
 	tx, err := mysql.DB.Beginx()
 	if err != nil {
 		tx.Rollback()
