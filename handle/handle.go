@@ -23,37 +23,43 @@ func StartEngine() {
 	r = gin.Default()
 	r.Static("/static", "static")
 	r.LoadHTMLGlob("template/*")
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "login.html", nil)
-	})
+	r.GET("/", func(c *gin.Context) { c.HTML(http.StatusOK, "login.html", nil) })
+
+	//login路由组
 	loginGroup := r.Group("login")
 	{
 		loginGroup.POST("/", Authority)
-		//这里是一个bug，点击进入到清单界面之后，网页url是xxx/login/#/，点击刷新按钮会GET /login 所以临时这样处理，后续想办法解决问题
-		loginGroup.GET("/", func(c *gin.Context) {
-			c.HTML(http.StatusOK, "login.html", nil)
-		})
+		/* 这里是一个bug，点击进入到清单界面之后，网页url是xxx/login/#/
+		点击刷新按钮会GET /login 所以临时这样处理，后续想办法解决问题*/
+		loginGroup.GET("/", getLogin)
 	}
+	//signup路由组
 	signupGroup := r.Group("/signup")
 	{
-		signupGroup.GET("/", func(c *gin.Context) {
-			c.HTML(http.StatusOK, "signup.html", nil)
-		})
+		signupGroup.GET("/", getSignup)
 		signupGroup.POST("/", SignUp)
 	}
-	//待办事项
+	//v1路由组
 	v1Group := r.Group("v1")
 	{
-		//添加
+		//添加待办事项
 		v1Group.POST("/todo", PostTitle)
 		//查看所有待办事项
 		v1Group.GET("/todo", GetTitle)
 		//修改某个待办事项
 		v1Group.PUT("/todo/:id", PutTitle)
-		//删除
+		//删除待办事项
 		v1Group.DELETE("/todo/:id", DeleteTitle)
 	}
 	r.Run(":40000")
+}
+
+func getLogin(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.html", nil)
+}
+
+func getSignup(c *gin.Context) {
+	c.HTML(http.StatusOK, "signup.html", nil)
 }
 
 func SignUp(c *gin.Context) {
@@ -61,15 +67,11 @@ func SignUp(c *gin.Context) {
 	password := c.PostForm("password")
 	again := c.PostForm("again")
 	if password != again {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "输入密码不一致",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "输入密码不一致"})
 	}
 	if err := mysql.InsertUser(username, password); err != nil {
 		log.Printf("insert failed,err:%v\n", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": "更新数据库失败",
-		})
+		c.JSON(http.StatusOK, gin.H{"error": "更新数据库失败"})
 		return
 	}
 	//跳转到登录页面
@@ -83,9 +85,7 @@ func Authority(c *gin.Context) {
 	//验证用户名和密码
 	err := mysql.AuthUser(username, password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "用户名或密码错误",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名或密码错误"})
 		return
 	}
 	c.HTML(http.StatusOK, "index.html", nil)
@@ -103,9 +103,7 @@ func PostTitle(c *gin.Context) {
 	if err := c.ShouldBindJSON(&t); err != nil {
 		tx.Rollback()
 		log.Println("get json failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	//将数据写入数据库
@@ -113,9 +111,7 @@ func PostTitle(c *gin.Context) {
 	if _, err := mysql.DB.Exec(sqlStr, t.Title, 0); err != nil {
 		tx.Rollback()
 		log.Println("insert into db failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, t)
@@ -134,9 +130,7 @@ func GetTitle(c *gin.Context) {
 	if err := mysql.DB.Select(&todoList, sqlStr); err != nil {
 		tx.Rollback()
 		log.Println("query db failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, todoList)
 	tx.Commit()
@@ -153,9 +147,7 @@ func PutTitle(c *gin.Context) {
 	if err != nil {
 		tx.Rollback()
 		log.Println("parse url param failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	var t Todo
@@ -163,9 +155,7 @@ func PutTitle(c *gin.Context) {
 	if err := tx.Get(&t, sqlStrQuery, id); err != nil {
 		tx.Rollback()
 		log.Println("update db failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	t.Status = !t.Status
@@ -173,9 +163,7 @@ func PutTitle(c *gin.Context) {
 	if _, err := tx.Exec(sqlStrUpdate, t.Status, id); err != nil {
 		tx.Rollback()
 		log.Println("update db failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	log.Println("update status,id:", id)
@@ -194,18 +182,14 @@ func DeleteTitle(c *gin.Context) {
 	if err != nil {
 		tx.Rollback()
 		log.Println("parse url param failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	sqlStr := `delete from task where id = ?;`
 	if _, err := mysql.DB.Exec(sqlStr, id); err != nil {
 		tx.Rollback()
 		log.Println("delete title failed,err:", err)
-		c.JSON(http.StatusOK, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
