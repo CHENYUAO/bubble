@@ -1,4 +1,4 @@
-module bubble
+module github.com/chenyuao/bubble
 
 go 1.14
 

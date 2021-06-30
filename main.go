@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"bubble/handle"
-	"bubble/mysql"
+	"github.com/chenyuao/bubble/database/mysql"
+	"github.com/chenyuao/bubble/handle"
 )
 
 func main() {
